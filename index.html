@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electrical Works Quotation & Design Generator - Kenya 2025</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas2pdf@1.0.8/dist/canvas2pdf.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-dark: #0f172a;
+            --primary-navy: #1e293b;
+            --accent-gold: #b59a6a;
+            --accent-teal: #0d9488;
+            --accent-green: #10b981;
+            --accent-red: #dc2626;
+            --accent-yellow: #f59e0b;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --teal-light: #ccfbf1;
+            --gold-light: #fef3c7;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-navy));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-teal), var(--accent-green));
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-yellow));
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(181, 154, 106, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #f8fafc, var(--accent-gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+
+        .logo-text .tagline {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 18px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .contact-info p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .contact-info i {
+            color: var(--accent-gold);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section, .output-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-section {
+            background: linear-gradient(to bottom, white 80%, #f8fafc);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent-teal);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--accent-teal);
+        }
+
+        .project-type-selector {
+            margin-bottom: 2rem;
+        }
+
+        .project-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .project-option {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-option::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-teal);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .project-option:hover {
+            border-color: var(--accent-teal);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15);
+        }
+
+        .project-option:hover::before {
+            transform: scaleX(1);
+        }
+
+        .project-option.selected {
+            border-color: var(--accent-teal);
+            background-color: var(--teal-light);
+            box-shadow: 0 8px 15px rgba(13, 148, 136, 0.2);
+        }
+
+        .project-option.selected::before {
+            transform: scaleX(1);
+            background: var(--accent-green);
+        }
+
+        .project-option i {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .project-option h4 {
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .project-option .price-range {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group label i {
+            color: var(--accent-teal);
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: white;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+        }
+
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .additional-options {
+            background: linear-gradient(to right, var(--teal-light), var(--gold-light));
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            border: 1px solid rgba(13, 148, 136, 0.2);
+        }
+
+        .additional-options h4 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .additional-options h4 i {
+            color: var(--accent-green);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .checkbox-group:hover {
+            border-color: var(--accent-teal);
+            transform: translateY(-2px);
+        }
+
+        .checkbox-group input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-green);
+        }
+
+        .checkbox-group label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            cursor: pointer;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-green));
+            color: white;
+            border: none;
+            padding: 1.1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(13, 148, 136, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.4);
+        }
+
+        .generate-btn i {
+            margin-right: 8px;
+        }
+
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, white 70%, #f8fafc);
+        }
+
+        .output-tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent-teal);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-teal);
+        }
+
+        .tab-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-teal);
+        }
+
+        .tab-content {
+            flex-grow: 1;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .quotation-preview, .design-preview {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-y: auto;
+            max-height: 500px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .design-preview {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .design-canvas-container {
+            width: 100%;
+            height: 350px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            background-color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #design-canvas {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+
+        .canvas-placeholder {
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .canvas-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .quotation-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-teal);
+        }
+
+        .quotation-header h3 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .quotation-header .year-badge {
+            display: inline-block;
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .quotation-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .quotation-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .quotation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .quotation-table th {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-navy));
+            color: white;
+            padding: 0.9rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .quotation-table td {
+            padding: 0.9rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .quotation-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .quotation-table tr:hover {
+            background-color: #f0f9ff;
+        }
+
+        .quotation-total {
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px dashed var(--gray);
+        }
+
+        .quotation-total .amount {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+        }
+
+        .design-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .design-item {
+            background-color: #f8fafc;
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-teal);
+        }
+
+        .design-item h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .design-item h4 i {
+            color: var(--accent-teal);
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 1rem;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .download-quote-btn {
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-green));
+            color: white;
+            box-shadow: 0 5px 15px rgba(13, 148, 136, 0.3);
+        }
+
+        .download-quote-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.4);
+        }
+
+        .download-design-btn {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-navy));
+            color: white;
+            box-shadow: 0 5px 15px rgba(15, 23, 42, 0.3);
+        }
+
+        .download-design-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.4);
+        }
+
+        .download-both-btn {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-yellow));
+            color: var(--primary-dark);
+            box-shadow: 0 5px 15px rgba(181, 154, 106, 0.3);
+        }
+
+        .download-both-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(181, 154, 106, 0.4);
+        }
+
+        .reset-btn {
+            background-color: #f1f5f9;
+            color: var(--primary-dark);
+            border: 1px solid #cbd5e1;
+        }
+
+        .reset-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        footer {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 2rem 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-gold);
+        }
+
+        .disclaimer {
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+            text-align: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            color: white;
+            padding: 1.2rem 1.8rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.4s ease;
+            max-width: 350px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--accent-red), #ef4444);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-teal);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notes {
+            background-color: #fef3c7;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--accent-gold);
+        }
+
+        .notes h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notes h4 i {
+            color: var(--accent-gold);
+        }
+
+        .notes ul {
+            padding-left: 1.5rem;
+        }
+
+        .notes li {
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .symbol-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .symbol-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .symbol-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .socket-symbol {
+            background-color: var(--accent-teal);
+        }
+
+        .light-symbol {
+            background-color: var(--accent-yellow);
+        }
+
+        .switch-symbol {
+            background-color: var(--accent-green);
+        }
+
+        .cu-symbol {
+            background-color: var(--primary-dark);
+        }
+
+        .year-banner {
+            text-align: center;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-yellow));
+            color: var(--primary-dark);
+            padding: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Kenya Electrical Works Pro</h1>
+                    <p class="tagline">Complete Electrical Design & Quotation System 2025</p>
+                </div>
+            </div>
+            <div class="contact-info">
+                <p><i class="fas fa-phone"></i> +254712836067</p>
+                <p><i class="fas fa-envelope"></i> brayomaisiba@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <section class="input-section">
+                <h2 class="section-title"><i class="fas fa-cogs"></i> Project Configuration</h2>
+                
+                <div class="year-banner">KENYA ELECTRICAL MARKET PRICES 2025</div>
+                
+                <div class="project-type-selector">
+                    <label><i class="fas fa-home"></i> Select Project Type:</label>
+                    <div class="project-options">
+                        <div class="project-option selected" data-type="3-bedroom">
+                            <i class="fas fa-bed"></i>
+                            <h4>3-Bedroom House</h4>
+                            <p class="price-range">KES 450K - 650K</p>
+                        </div>
+                        <div class="project-option" data-type="4-bedroom">
+                            <i class="fas fa-home"></i>
+                            <h4>4-Bedroom House</h4>
+                            <p class="price-range">KES 650K - 900K</p>
+                        </div>
+                        <div class="project-option" data-type="commercial">
+                            <i class="fas fa-building"></i>
+                            <h4>Commercial Office</h4>
+                            <p class="price-range">KES 800K - 1.5M</p>
+                        </div>
+                        <div class="project-option" data-type="industrial">
+                            <i class="fas fa-industry"></i>
+                            <h4>Industrial</h4>
+                            <p class="price-range">KES 1.2M - 3M+</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="project-name"><i class="fas fa-file-signature"></i> Project Name</label>
+                    <input type="text" id="project-name" placeholder="e.g., 3-Bedroom Electrical Installation" value="3-Bedroom House Electrical Installation">
+                </div>
+
+                <div class="input-group">
+                    <label for="client-name"><i class="fas fa-user"></i> Client Name</label>
+                    <input type="text" id="client-name" placeholder="Enter client name" value="John Kamau">
+                </div>
+
+                <div class="input-group">
+                    <label for="location"><i class="fas fa-map-marker-alt"></i> Location</label>
+                    <input type="text" id="location" placeholder="Enter project location" value="Nairobi">
+                </div>
+
+                <div class="input-group">
+                    <label for="property-size"><i class="fas fa-arrows-alt"></i> Property Size (Sq. Ft)</label>
+                    <input type="number" id="property-size" placeholder="Enter property size" value="1800">
+                </div>
+
+                <div class="input-group">
+                    <label for="special-requirements"><i class="fas fa-clipboard-list"></i> Special Requirements</label>
+                    <textarea id="special-requirements" placeholder="Any special electrical requirements...">Standard electrical installation for 3-bedroom house with living room, kitchen, and 2 bathrooms.</textarea>
+                </div>
+
+                <div class="additional-options">
+                    <h4><i class="fas fa-list-check"></i> Additional Options</h4>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="solar" checked>
+                            <label for="solar">Solar Power Backup (3kW)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="surge-protection" checked>
+                            <label for="surge-protection">Whole House Surge Protection</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="smart-home">
+                            <label for="smart-home">Smart Home Integration</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="cctv">
+                            <label for="cctv">CCTV Security System</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="generator">
+                            <label for="generator">Generator Backup</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="water-heater">
+                            <label for="water-heater">Instant Water Heater</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="generate-btn" id="generate-btn">
+                    <i class="fas fa-calculator"></i> Generate Quotation & Design
+                </button>
+            </section>
+
+            <section class="output-section">
+                <div class="output-tabs">
+                    <button class="tab-btn active" data-tab="quotation">Quotation</button>
+                    <button class="tab-btn" data-tab="design">Electrical Design</button>
+                    <button class="tab-btn" data-tab="specifications">Technical Specs</button>
+                </div>
+
+                <div class="tab-content active" id="quotation-tab">
+                    <div class="loading" id="loading-quotation">
+                        <div class="spinner"></div>
+                        <p>Generating quotation...</p>
+                    </div>
+                    
+                    <div class="quotation-preview" id="quotation-preview">
+                        <div class="quotation-header">
+                            <h3>ELECTRICAL WORKS QUOTATION</h3>
+                            <p>For: <span id="preview-project-name">3-Bedroom House Electrical Installation</span></p>
+                            <p>Date: <span id="preview-date">14 October 2025</span></p>
+                            <div class="year-badge">2025 KENYA MARKET RATES</div>
+                        </div>
+                        
+                        <div class="quotation-details">
+                            <p><strong><i class="fas fa-user"></i> Client:</strong> <span id="preview-client">John Kamau</span></p>
+                            <p><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> <span id="preview-location">Nairobi</span></p>
+                            <p><strong><i class="fas fa-arrows-alt"></i> Property Size:</strong> <span id="preview-size">1800</span> Sq. Ft</p>
+                            <p><strong><i class="fas fa-hashtag"></i> Quotation ID:</strong> KE-EQ-2025-0872</p>
+                        </div>
+                        
+                        <table class="quotation-table" id="materials-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price (KES)</th>
+                                    <th>Total (KES)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Materials will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="quotation-total">
+                            <p>Total Estimated Cost: <span class="amount" id="total-cost">0</span> KES</p>
+                            <p style="font-size: 0.9rem; color: var(--gray);">VAT (16%) included where applicable</p>
+                        </div>
+                        
+                        <div class="notes">
+                            <h4><i class="fas fa-info-circle"></i> Notes & Terms</h4>
+                            <ul>
+                                <li>Prices are based on current Kenyan market rates (October 2025)</li>
+                                <li>Quotation valid for 30 days from the date of issue</li>
+                                <li>Prices may vary based on actual site conditions and location</li>
+                                <li>Installation labor and professional fees included</li>
+                                <li>All materials comply with KEBS and IEK standards</li>
+                                <li>Payment terms: 40% advance, 50% upon delivery, 10% after completion</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="design-tab">
+                    <div class="loading" id="loading-design">
+                        <div class="spinner"></div>
+                        <p>Generating electrical design...</p>
+                    </div>
+                    
+                    <div class="design-preview" id="design-preview">
+                        <div class="design-canvas-container">
+                            <canvas id="design-canvas" width="800" height="400"></canvas>
+                            <div class="canvas-placeholder" id="canvas-placeholder">
+                                <i class="fas fa-project-diagram"></i>
+                                <p>Electrical design layout will appear here</p>
+                                <p style="font-size: 0.9rem;">Click "Generate Quotation & Design" to create</p>
+                            </div>
+                        </div>
+                        
+                        <div class="symbol-legend">
+                            <div class="symbol-item">
+                                <div class="symbol-box socket-symbol"></div>
+                                <span>Power Socket</span>
+                            </div>
+                            <div class="symbol-item">
+                                <div class="symbol-box light-symbol"></div>
+                                <span>Lighting Point</span>
+                            </div>
+                            <div class="symbol-item">
+                                <div class="symbol-box switch-symbol"></div>
+                                <span>Light Switch</span>
+                            </div>
+                            <div class="symbol-item">
+                                <div class="symbol-box cu-symbol"></div>
+                                <span>Consumer Unit</span>
+                            </div>
+                        </div>
+                        
+                        <div class="design-details">
+                            <div class="design-item">
+                                <h4><i class="fas fa-plug"></i> Circuit Design</h4>
+                                <p><strong>Lighting Circuits:</strong> 3 circuits (Ground floor, First floor, Outdoor)</p>
+                                <p><strong>Power Circuits:</strong> 5 circuits (Kitchen, Living, Bedrooms, Water heater, Sockets)</p>
+                                <p><strong>Special Circuits:</strong> 1 circuit (A/C units)</p>
+                            </div>
+                            <div class="design-item">
+                                <h4><i class="fas fa-bolt"></i> Load Calculation</h4>
+                                <p><strong>Total Connected Load:</strong> 8.5 kW</p>
+                                <p><strong>Maximum Demand:</strong> 6.2 kW</p>
+                                <p><strong>Main Switch:</strong> 63A DP Isolator</p>
+                            </div>
+                            <div class="design-item">
+                                <h4><i class="fas fa-code-branch"></i> Wiring Specification</h4>
+                                <p><strong>Main Incoming:</strong> 16mm² PVC/PVC Cu</p>
+                                <p><strong>Power Circuits:</strong> 2.5mm² PVC/PVC Cu</p>
+                                <p><strong>Lighting Circuits:</strong> 1.5mm² PVC/PVC Cu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="specifications-tab">
+                    <div class="quotation-preview">
+                        <div class="quotation-header">
+                            <h3>TECHNICAL SPECIFICATIONS</h3>
+                            <p>Detailed Electrical Specifications</p>
+                        </div>
+                        
+                        <div id="specifications-content">
+                            <!-- Technical specifications will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="action-btn download-quote-btn" id="download-quote-btn">
+                        <i class="fas fa-file-invoice-dollar"></i> Download Quotation PDF
+                    </button>
+                    <button class="action-btn download-design-btn" id="download-design-btn">
+                        <i class="fas fa-project-diagram"></i> Download Design PDF
+                    </button>
+                    <button class="action-btn download-both-btn" id="download-both-btn">
+                        <i class="fas fa-file-archive"></i> Download Both as ZIP
+                    </button>
+                    <button class="action-btn reset-btn" id="reset-btn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Kenya Electrical Works Pro</h4>
+                <p>Professional electrical engineering design and quotation system for the Kenyan market. Providing accurate estimates and designs since 2020.</p>
+                <p><i class="fas fa-phone"></i> +254712836067</p>
+                <p><i class="fas fa-envelope"></i> brayomaisiba@gmail.com</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Our Services</h4>
+                <p>• Electrical Design & Planning</p>
+                <p>• Quotation Generation</p>
+                <p>• Materials Estimation</p>
+                <p>• Code Compliance Checking</p>
+                <p>• Project Documentation</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Standards Compliance</h4>
+                <p>• Kenya Bureau of Standards (KEBS)</p>
+                <p>• Institution of Engineers of Kenya (IEK)</p>
+                <p>• Energy & Petroleum Regulatory Authority</p>
+                <p>• National Construction Authority</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <p><a href="#">Sample Quotations</a></p>
+                <p><a href="#">Electrical Code Guide</a></p>
+                <p><a href="#">Materials Price List 2025</a></p>
+                <p><a href="#">Contact Support</a></p>
+            </div>
+            
+            <div class="disclaimer">
+                <p>Disclaimer: Prices are estimates based on current Kenyan market rates (2025). Actual costs may vary based on specific requirements, location, and market fluctuations. Always consult with a certified electrician for final pricing and design. This tool is for estimation purposes only.</p>
+                <p style="margin-top: 0.5rem;">© 2025 Kenya Electrical Works Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">Quotation generated successfully!</span>
+    </div>
+
+    <script>
+        // Updated data for 2025 Kenyan market
+        const projectData = {
+            "3-bedroom": {
+                name: "3-Bedroom House Electrical Installation",
+                materials: [
+                    { item: "1", description: "6mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 5, unitPrice: 18500 },
+                    { item: "2", description: "2.5mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 9, unitPrice: 9500 },
+                    { item: "3", description: "1.5mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 7, unitPrice: 6200 },
+                    { item: "4", description: "13A Switch Sockets (White, Dual USB)", quantity: 32, unitPrice: 420 },
+                    { item: "5", description: "Light Switches (1-Gang, Modern White)", quantity: 28, unitPrice: 320 },
+                    { item: "6", description: "Light Switches (2-Gang, Modern White)", quantity: 16, unitPrice: 480 },
+                    { item: "7", description: "LED Downlights (15W, Dimmable)", quantity: 38, unitPrice: 950 },
+                    { item: "8", description: "LED Bulbs (12W, E27, Warm White)", quantity: 22, unitPrice: 420 },
+                    { item: "9", description: "Consumer Unit (20 Way, IP65)", quantity: 1, unitPrice: 14500 },
+                    { item: "10", description: "Circuit Breakers (32A, Type C)", quantity: 8, unitPrice: 2100 },
+                    { item: "11", description: "Circuit Breakers (16A, Type C)", quantity: 12, unitPrice: 1800 },
+                    { item: "12", description: "RCBO (32A, 30mA)", quantity: 2, unitPrice: 4500 },
+                    { item: "13", description: "PVC Conduit Pipes (20mm x 3m)", quantity: 45, unitPrice: 520 },
+                    { item: "14", description: "PVC Conduit Pipes (25mm x 3m)", quantity: 28, unitPrice: 680 },
+                    { item: "15", description: "Junction Boxes (IP54)", quantity: 35, unitPrice: 280 },
+                    { item: "16", description: "Earthing Kit (Copper Rod, Clamps)", quantity: 1, unitPrice: 12500 },
+                    { item: "17", description: "Labor & Professional Installation", quantity: 1, unitPrice: 145000 },
+                    { item: "18", description: "Testing & Commissioning", quantity: 1, unitPrice: 18000 }
+                ],
+                designSpecs: {
+                    circuits: {
+                        lighting: 3,
+                        power: 5,
+                        special: 1
+                    },
+                    load: "8.5 kW",
+                    demand: "6.2 kW",
+                    mainSwitch: "63A DP Isolator",
+                    wiring: {
+                        main: "16mm² PVC/PVC Cu",
+                        power: "2.5mm² PVC/PVC Cu",
+                        lighting: "1.5mm² PVC/PVC Cu"
+                    }
+                }
+            },
+            "4-bedroom": {
+                name: "4-Bedroom House Electrical Installation",
+                materials: [
+                    { item: "1", description: "10mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 2, unitPrice: 32000 },
+                    { item: "2", description: "6mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 6, unitPrice: 18500 },
+                    { item: "3", description: "2.5mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 11, unitPrice: 9500 },
+                    { item: "4", description: "1.5mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 9, unitPrice: 6200 },
+                    { item: "5", description: "13A Switch Sockets (White, Dual USB)", quantity: 42, unitPrice: 420 },
+                    { item: "6", description: "Light Switches (1-Gang, Modern White)", quantity: 35, unitPrice: 320 },
+                    { item: "7", description: "Light Switches (2-Gang, Modern White)", quantity: 22, unitPrice: 480 },
+                    { item: "8", description: "LED Downlights (15W, Dimmable)", quantity: 48, unitPrice: 950 },
+                    { item: "9", description: "LED Bulbs (12W, E27, Warm White)", quantity: 28, unitPrice: 420 },
+                    { item: "10", description: "Consumer Unit (24 Way, IP65)", quantity: 1, unitPrice: 18500 },
+                    { item: "11", description: "Circuit Breakers (32A, Type C)", quantity: 10, unitPrice: 2100 },
+                    { item: "12", description: "Circuit Breakers (16A, Type C)", quantity: 15, unitPrice: 1800 },
+                    { item: "13", description: "RCBO (32A, 30mA)", quantity: 3, unitPrice: 4500 },
+                    { item: "14", description: "PVC Conduit Pipes (20mm x 3m)", quantity: 60, unitPrice: 520 },
+                    { item: "15", description: "PVC Conduit Pipes (25mm x 3m)", quantity: 35, unitPrice: 680 },
+                    { item: "16", description: "Junction Boxes (IP54)", quantity: 45, unitPrice: 280 },
+                    { item: "17", description: "Earthing Kit (Copper Rod, Clamps)", quantity: 1, unitPrice: 12500 },
+                    { item: "18", description: "Labor & Professional Installation", quantity: 1, unitPrice: 185000 },
+                    { item: "19", description: "Testing & Commissioning", quantity: 1, unitPrice: 22000 }
+                ],
+                designSpecs: {
+                    circuits: {
+                        lighting: 4,
+                        power: 6,
+                        special: 2
+                    },
+                    load: "11.2 kW",
+                    demand: "8.1 kW",
+                    mainSwitch: "80A DP Isolator",
+                    wiring: {
+                        main: "16mm² PVC/PVC Cu",
+                        power: "2.5mm² PVC/PVC Cu",
+                        lighting: "1.5mm² PVC/PVC Cu"
+                    }
+                }
+            },
+            "commercial": {
+                name: "Commercial Office Electrical Installation",
+                materials: [
+                    { item: "1", description: "16mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 4, unitPrice: 42000 },
+                    { item: "2", description: "10mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 6, unitPrice: 32000 },
+                    { item: "3", description: "6mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 10, unitPrice: 18500 },
+                    { item: "4", description: "2.5mm² PVC Copper Cable (100m roll) - KEBS Approved", quantity: 15, unitPrice: 9500 },
+                    { item: "5", description: "Commercial LED Panel Lights (600x600mm, 40W)", quantity: 45, unitPrice: 4200 },
+                    { item: "6", description: "13A Switch Sockets (White, Dual USB)", quantity: 65, unitPrice: 420 },
+                    { item: "7", description: "Data & Power Points Combo (CAT6 + Power)", quantity: 35, unitPrice: 3200 },
+                    { item: "8", description: "Distribution Board (36 Way, IP65)", quantity: 2, unitPrice: 22500 },
+                    { item: "9", description: "Circuit Breakers (63A, Type C)", quantity: 6, unitPrice: 5200 },
+                    { item: "10", description: "Circuit Breakers (32A, Type C)", quantity: 18, unitPrice: 2100 },
+                    { item: "11", description: "Emergency Exit Lights (LED, 3hr Backup)", quantity: 15, unitPrice: 4200 },
+                    { item: "12", description: "Steel Conduit Pipes (25mm x 3m)", quantity: 90, unitPrice: 1450 },
+                    { item: "13", description: "Cable Trays (100mm x 2m, Galvanized)", quantity: 35, unitPrice: 3200 },
+                    { item: "14", description: "Earthing System (Complete)", quantity: 1, unitPrice: 45000 },
+                    { item: "15", description: "Labor & Professional Installation", quantity: 1, unitPrice: 285000 },
+                    { item: "16", description: "Testing & Commissioning", quantity: 1, unitPrice: 35000 }
+                ],
+                designSpecs: {
+                    circuits: {
+                        lighting: 6,
+                        power: 8,
+                        special: 3
+                    },
+                    load: "25.5 kW",
+                    demand: "18.3 kW",
+                    mainSwitch: "125A TP Isolator",
+                    wiring: {
+                        main: "25mm² PVC/PVC Cu",
+                        power: "4mm² PVC/PVC Cu",
+                        lighting: "2.5mm² PVC/PVC Cu"
+                    }
+                }
+            },
+            "industrial": {
+                name: "Industrial Plant Electrical Installation",
+                materials: [
+                    { item: "1", description: "50mm² Armored Cable (100m roll) - KEBS Approved", quantity: 8, unitPrice: 125000 },
+                    { item: "2", description: "35mm² Armored Cable (100m roll) - KEBS Approved", quantity: 12, unitPrice: 95000 },
+                    { item: "3", description: "16mm² Armored Cable (100m roll) - KEBS Approved", quantity: 18, unitPrice: 52000 },
+                    { item: "4", description: "Industrial Flood Lights (200W LED, IP65)", quantity: 28, unitPrice: 18500 },
+                    { item: "5", description: "Industrial Switchgear Panel (400A, IP55)", quantity: 3, unitPrice: 185000 },
+                    { item: "6", description: "Heavy Duty Circuit Breakers (250A)", quantity: 8, unitPrice: 28500 },
+                    { item: "7", description: "Motor Starters (25HP, DOL)", quantity: 6, unitPrice: 45000 },
+                    { item: "8", description: "Cable Ladders (400mm x 3m, Galvanized)", quantity: 65, unitPrice: 12500 },
+                    { item: "9", description: "Earthing System (Copper Tape, Rods)", quantity: 1, unitPrice: 125000 },
+                    { item: "10", description: "Lightning Protection System (Complete)", quantity: 1, unitPrice: 185000 },
+                    { item: "11", description: "Industrial Plugs & Sockets (63A, IP55)", quantity: 25, unitPrice: 12500 },
+                    { item: "12", description: "Variable Frequency Drives (15kW)", quantity: 4, unitPrice: 85000 },
+                    { item: "13", description: "Labor & Professional Installation", quantity: 1, unitPrice: 650000 },
+                    { item: "14", description: "Testing & Commissioning", quantity: 1, unitPrice: 85000 }
+                ],
+                designSpecs: {
+                    circuits: {
+                        lighting: 8,
+                        power: 12,
+                        special: 6
+                    },
+                    load: "85.5 kW",
+                    demand: "62.5 kW",
+                    mainSwitch: "400A TP Isolator",
+                    wiring: {
+                        main: "70mm² Armored",
+                        power: "16mm² Armored",
+                        lighting: "4mm² PVC/PVC Cu"
+                    }
+                }
+            }
+        };
+
+        // Additional options pricing for 2025
+        const additionalOptions = {
+            solar: { description: "Solar Power Backup System (3kW with Batteries)", price: 420000 },
+            surge: { description: "Whole House Surge Protection System", price: 32000 },
+            smart: { description: "Smart Home Integration System (WiFi)", price: 185000 },
+            cctv: { description: "CCTV Security System (8 cameras, 2TB DVR)", price: 225000 },
+            generator: { description: "Standby Generator (7.5kVA, Auto-start)", price: 285000 },
+            waterHeater: { description: "Instant Water Heater (5.5kW, Digital)", price: 18500 }
+        };
+
+        // DOM elements
+        const projectOptions = document.querySelectorAll('.project-option');
+        const projectNameInput = document.getElementById('project-name');
+        const clientNameInput = document.getElementById('client-name');
+        const locationInput = document.getElementById('location');
+        const propertySizeInput = document.getElementById('property-size');
+        const specialRequirementsInput = document.getElementById('special-requirements');
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadQuoteBtn = document.getElementById('download-quote-btn');
+        const downloadDesignBtn = document.getElementById('download-design-btn');
+        const downloadBothBtn = document.getElementById('download-both-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const loadingQuotation = document.getElementById('loading-quotation');
+        const loadingDesign = document.getElementById('loading-design');
+        const quotationPreview = document.getElementById('quotation-preview');
+        const designPreview = document.getElementById('design-preview');
+        const canvas = document.getElementById('design-canvas');
+        const canvasPlaceholder = document.getElementById('canvas-placeholder');
+        const ctx = canvas.getContext('2d');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        const specificationsContent = document.getElementById('specifications-content');
+        
+        // Checkbox elements for additional options
+        const solarCheckbox = document.getElementById('solar');
+        const surgeCheckbox = document.getElementById('surge-protection');
+        const smartCheckbox = document.getElementById('smart-home');
+        const cctvCheckbox = document.getElementById('cctv');
+        const generatorCheckbox = document.getElementById('generator');
+        const waterHeaterCheckbox = document.getElementById('water-heater');
+
+        // Current project type
+        let currentProjectType = '3-bedroom';
+        let currentDesign = null;
+
+        // Initialize the page
+        function init() {
+            // Set current date to 2025
+            const now = new Date();
+            now.setFullYear(2025);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('preview-date').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Set project type selection
+            projectOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove selected class from all options
+                    projectOptions.forEach(opt => opt.classList.remove('selected'));
+                    // Add selected class to clicked option
+                    option.classList.add('selected');
+                    // Update current project type
+                    currentProjectType = option.dataset.type;
+                    
+                    // Update project name based on selection
+                    projectNameInput.value = projectData[currentProjectType].name;
+                    
+                    // Generate quotation for new project type
+                    generateQuotationAndDesign();
+                });
+            });
+
+            // Generate quotation button
+            generateBtn.addEventListener('click', generateQuotationAndDesign);
+            
+            // Download PDF buttons
+            downloadQuoteBtn.addEventListener('click', downloadQuotationPDF);
+            downloadDesignBtn.addEventListener('click', downloadDesignPDF);
+            downloadBothBtn.addEventListener('click', downloadBothAsZIP);
+            
+            // Reset button
+            resetBtn.addEventListener('click', resetForm);
+            
+            // Tab switching
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+                    
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Update active tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                    
+                    // If design tab is selected and design hasn't been generated, generate it
+                    if (tabId === 'design' && !currentDesign) {
+                        generateDesign();
+                    }
+                    
+                    // If specs tab is selected, generate specifications
+                    if (tabId === 'specifications') {
+                        generateSpecifications();
+                    }
+                });
+            });
+            
+            // Input change listeners
+            projectNameInput.addEventListener('input', updatePreview);
+            clientNameInput.addEventListener('input', updatePreview);
+            locationInput.addEventListener('input', updatePreview);
+            propertySizeInput.addEventListener('input', updatePreview);
+            
+            // Generate initial quotation and design
+            generateQuotationAndDesign();
+        }
+
+        // Generate quotation and design based on inputs
+        function generateQuotationAndDesign() {
+            // Show loading for both
+            loadingQuotation.style.display = 'block';
+            quotationPreview.style.display = 'none';
+            loadingDesign.style.display = 'block';
+            designPreview.style.display = 'none';
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Generate quotation
+                generateQuotation();
+                
+                // Generate design
+                generateDesign();
+                
+                // Generate specifications
+                generateSpecifications();
+                
+                // Hide loading and show previews
+                loadingQuotation.style.display = 'none';
+                quotationPreview.style.display = 'block';
+                loadingDesign.style.display = 'none';
+                designPreview.style.display = 'block';
+                
+                // Switch to quotation tab
+                tabBtns.forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-tab="quotation"]').classList.add('active');
+                tabContents.forEach(c => c.classList.remove('active'));
+                document.getElementById('quotation-tab').classList.add('active');
+                
+                // Show notification
+                showNotification('Quotation and electrical design generated successfully!');
+            }, 1200);
+        }
+
+        // Generate quotation
+        function generateQuotation() {
+            // Get base materials for selected project type
+            let materials = [...projectData[currentProjectType].materials];
+            
+            // Add additional options if selected
+            if (solarCheckbox.checked) {
+                materials.push({
+                    item: (materials.length + 1).toString(),
+                    description: additionalOptions.solar.description,
+                    quantity: 1,
+                    unitPrice: additionalOptions.solar.price
+                });
+            }
+            
+            if (surgeCheckbox.checked) {
+                materials.push({
+                    item: (materials.length + 1).toString(),
+                    description: additionalOptions.surge.description,
+                    quantity: 1,
+                    unitPrice: additionalOptions.surge.price
+                });
+            }
+            
+            if (smartCheckbox.checked) {
+                materials.push({
+                    item: (materials.length + 1).toString(),
+                    description: additionalOptions.smart.description,
+                    quantity: 1,
+                    unitPrice: additionalOptions.smart.price
+                });
+            }
+            
+            if (cctvCheckbox.checked) {
+                materials.push({
+                    item: (materials.length + 1).toString(),
+                    description: additionalOptions.cctv.description,
+                    quantity: 1,
+                    unitPrice: additionalOptions.cctv.price
+                });
+            }
+            
+            if (generatorCheckbox.checked) {
+                materials.push({
+                    item: (materials.length + 1).toString(),
+                    description: additionalOptions.generator.description,
+                    quantity: 1,
+                    unitPrice: additionalOptions.generator.price
+                });
+            }
+            
+            if (waterHeaterCheckbox.checked) {
+                materials.push({
+                    item: (materials.length + 1).toString(),
+                    description: additionalOptions.waterHeater.description,
+                    quantity: 1,
+                    unitPrice: additionalOptions.waterHeater.price
+                });
+            }
+            
+            // Update preview with materials
+            updateMaterialsTable(materials);
+            
+            // Update other preview details
+            updatePreview();
+        }
+
+        // Generate electrical design
+        function generateDesign() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Hide placeholder
+            canvasPlaceholder.style.display = 'none';
+            
+            // Draw electrical design based on project type
+            drawElectricalDesign();
+            
+            currentDesign = true;
+        }
+
+        // Draw electrical design on canvas
+        function drawElectricalDesign() {
+            // Set background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw title
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Electrical Layout - ${projectData[currentProjectType].name}`, canvas.width / 2, 30);
+            
+            // Draw house outline based on project type
+            let houseWidth, houseHeight, houseX, houseY;
+            
+            switch(currentProjectType) {
+                case '3-bedroom':
+                    houseWidth = 500;
+                    houseHeight = 300;
+                    houseX = (canvas.width - houseWidth) / 2;
+                    houseY = 70;
+                    draw3BedroomLayout(houseX, houseY, houseWidth, houseHeight);
+                    break;
+                case '4-bedroom':
+                    houseWidth = 550;
+                    houseHeight = 350;
+                    houseX = (canvas.width - houseWidth) / 2;
+                    houseY = 70;
+                    draw4BedroomLayout(houseX, houseY, houseWidth, houseHeight);
+                    break;
+                case 'commercial':
+                    houseWidth = 600;
+                    houseHeight = 250;
+                    houseX = (canvas.width - houseWidth) / 2;
+                    houseY = 70;
+                    drawCommercialLayout(houseX, houseY, houseWidth, houseHeight);
+                    break;
+                case 'industrial':
+                    houseWidth = 650;
+                    houseHeight = 400;
+                    houseX = (canvas.width - houseWidth) / 2;
+                    houseY = 70;
+                    drawIndustrialLayout(houseX, houseY, houseWidth, houseHeight);
+                    break;
+            }
+            
+            // Draw legend
+            drawLegend();
+        }
+
+        // Draw 3-bedroom layout
+        function draw3BedroomLayout(x, y, width, height) {
+            // Draw outer walls
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y, width, height);
+            
+            // Draw rooms
+            const roomHeight = height / 3;
+            const roomWidth = width / 4;
+            
+            // Draw living room
+            ctx.fillStyle = '#f0f9ff';
+            ctx.fillRect(x, y, roomWidth * 2, roomHeight);
+            ctx.strokeRect(x, y, roomWidth * 2, roomHeight);
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Living Room', x + roomWidth, y + roomHeight/2 + 4);
+            
+            // Draw kitchen
+            ctx.fillStyle = '#f0fdf4';
+            ctx.fillRect(x + roomWidth * 2, y, roomWidth, roomHeight);
+            ctx.strokeRect(x + roomWidth * 2, y, roomWidth, roomHeight);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('Kitchen', x + roomWidth * 2.5, y + roomHeight/2 + 4);
+            
+            // Draw bedrooms
+            for (let i = 0; i < 3; i++) {
+                const bedX = x + i * roomWidth;
+                const bedY = y + roomHeight;
+                
+                ctx.fillStyle = i === 0 ? '#fef3c7' : '#f8fafc';
+                ctx.fillRect(bedX, bedY, roomWidth, roomHeight);
+                ctx.strokeRect(bedX, bedY, roomWidth, roomHeight);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillText(`Bedroom ${i+1}`, bedX + roomWidth/2, bedY + roomHeight/2 + 4);
+            }
+            
+            // Draw bathroom
+            ctx.fillStyle = '#ecfeff';
+            ctx.fillRect(x + roomWidth * 3, y + roomHeight, roomWidth, roomHeight);
+            ctx.strokeRect(x + roomWidth * 3, y + roomHeight, roomWidth, roomHeight);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('Bathroom', x + roomWidth * 3.5, y + roomHeight + roomHeight/2 + 4);
+            
+            // Draw electrical components
+            drawElectricalComponents(x, y, width, height, 3);
+        }
+
+        // Draw electrical components
+        function drawElectricalComponents(houseX, houseY, houseWidth, houseHeight, bedroomCount) {
+            // Consumer unit
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(houseX + 20, houseY + houseHeight/2 - 10, 20, 30);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '10px Arial';
+            ctx.fillText('CU', houseX + 25, houseY + houseHeight/2 + 5);
+            
+            // Sockets (teal)
+            const socketPositions = [
+                [houseX + 60, houseY + 40],
+                [houseX + 150, houseY + 40],
+                [houseX + 250, houseY + 40],
+                [houseX + 400, houseY + 40],
+                [houseX + 60, houseY + 120],
+                [houseX + 180, houseY + 120],
+                [houseX + 300, houseY + 120],
+                [houseX + 450, houseY + 120],
+                [houseX + 100, houseY + 200],
+                [houseX + 250, houseY + 200],
+                [houseX + 400, houseY + 200]
+            ];
+            
+            socketPositions.forEach(pos => {
+                ctx.fillStyle = '#0d9488';
+                ctx.fillRect(pos[0], pos[1], 12, 8);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '8px Arial';
+                ctx.fillText('S', pos[0] + 3, pos[1] + 6);
+            });
+            
+            // Lights (yellow)
+            const lightPositions = [
+                [houseX + 100, houseY + 70],
+                [houseX + 300, houseY + 70],
+                [houseX + 450, houseY + 70],
+                [houseX + 100, houseY + 150],
+                [houseX + 300, houseY + 150],
+                [houseX + 450, houseY + 150],
+                [houseX + 150, houseY + 230],
+                [houseX + 350, houseY + 230]
+            ];
+            
+            lightPositions.forEach(pos => {
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(pos[0], pos[1], 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '8px Arial';
+                ctx.fillText('L', pos[0] - 2, pos[1] + 3);
+            });
+            
+            // Switches (green)
+            const switchPositions = [
+                [houseX + 40, houseY + 80],
+                [houseX + 200, houseY + 80],
+                [houseX + 350, houseY + 80],
+                [houseX + 40, houseY + 160],
+                [houseX + 200, houseY + 160],
+                [houseX + 350, houseY + 160],
+                [houseX + 100, houseY + 250],
+                [houseX + 300, houseY + 250]
+            ];
+            
+            switchPositions.forEach(pos => {
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(pos[0], pos[1], 10, 10);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '8px Arial';
+                ctx.fillText('SW', pos[0] + 1, pos[1] + 7);
+            });
+        }
+
+        // Draw 4-bedroom layout
+        function draw4BedroomLayout(x, y, width, height) {
+            // Similar to 3-bedroom but with 4 bedrooms
+            draw3BedroomLayout(x, y, width, height);
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('4-Bedroom Layout', x + width/2, y - 10);
+        }
+
+        // Draw commercial layout
+        function drawCommercialLayout(x, y, width, height) {
+            // Draw outer walls
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y, width, height);
+            
+            // Draw grid of offices
+            const cols = 5;
+            const rows = 3;
+            const cellWidth = width / cols;
+            const cellHeight = height / rows;
+            
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const cellX = x + i * cellWidth;
+                    const cellY = y + j * cellHeight;
+                    
+                    ctx.strokeRect(cellX, cellY, cellWidth, cellHeight);
+                    
+                    if (i === 0 && j === 0) {
+                        ctx.fillStyle = '#f0f9ff';
+                        ctx.fillRect(cellX, cellY, cellWidth * 2, cellHeight);
+                        ctx.fillStyle = '#0f172a';
+                        ctx.font = '10px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Reception', cellX + cellWidth, cellY + cellHeight/2 + 4);
+                    } else if (i === 2 && j === 0) {
+                        ctx.fillStyle = '#fef3c7';
+                        ctx.fillRect(cellX, cellY, cellWidth * 2, cellHeight);
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillText('Conference', cellX + cellWidth, cellY + cellHeight/2 + 4);
+                    } else if (i === 4 && j === 2) {
+                        ctx.fillStyle = '#ecfeff';
+                        ctx.fillRect(cellX, cellY, cellWidth, cellHeight);
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillText('Server', cellX + cellWidth/2, cellY + cellHeight/2 + 4);
+                    } else {
+                        ctx.fillStyle = '#f8fafc';
+                        ctx.fillRect(cellX, cellY, cellWidth, cellHeight);
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillText('Office', cellX + cellWidth/2, cellY + cellHeight/2 + 4);
+                    }
+                }
+            }
+            
+            // Draw electrical components
+            drawElectricalComponents(x, y, width, height, 0);
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Commercial Office Layout', x + width/2, y - 10);
+        }
+
+        // Draw industrial layout
+        function drawIndustrialLayout(x, y, width, height) {
+            // Draw outer walls
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y, width, height);
+            
+            // Draw large open space
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(x, y, width * 0.7, height);
+            ctx.strokeRect(x, y, width * 0.7, height);
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Production Area', x + (width * 0.7)/2, y + height/2);
+            
+            // Draw office section
+            ctx.fillStyle = '#f0f9ff';
+            ctx.fillRect(x + width * 0.7, y, width * 0.3, height * 0.5);
+            ctx.strokeRect(x + width * 0.7, y, width * 0.3, height * 0.5);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('Office', x + width * 0.85, y + height * 0.25);
+            
+            // Draw storage section
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(x + width * 0.7, y + height * 0.5, width * 0.3, height * 0.5);
+            ctx.strokeRect(x + width * 0.7, y + height * 0.5, width * 0.3, height * 0.5);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('Storage', x + width * 0.85, y + height * 0.75);
+            
+            // Draw electrical components (more industrial)
+            // Consumer unit
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(x + 30, y + height/2 - 15, 25, 40);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '10px Arial';
+            ctx.fillText('MDB', x + 35, y + height/2 + 5);
+            
+            // Motors
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath();
+            ctx.arc(x + 150, y + 100, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('M1', x + 145, y + 105);
+            
+            ctx.beginPath();
+            ctx.arc(x + 150, y + 250, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillText('M2', x + 145, y + 255);
+            
+            // Industrial sockets
+            ctx.fillStyle = '#0d9488';
+            for (let i = 0; i < 8; i++) {
+                const socketX = x + 250 + (i % 4) * 80;
+                const socketY = y + 80 + Math.floor(i / 4) * 120;
+                ctx.fillRect(socketX, socketY, 15, 10);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '8px Arial';
+                ctx.fillText('IS', socketX + 4, socketY + 7);
+                ctx.fillStyle = '#0d9488';
+            }
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Industrial Plant Layout', x + width/2, y - 10);
+        }
+
+        // Draw legend
+        function drawLegend() {
+            const legendX = 20;
+            const legendY = canvas.height - 100;
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Electrical Symbols Legend', legendX, legendY);
+            
+            // Socket symbol
+            ctx.fillStyle = '#0d9488';
+            ctx.fillRect(legendX, legendY + 20, 15, 10);
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '12px Arial';
+            ctx.fillText('= Power Socket', legendX + 25, legendY + 30);
+            
+            // Light symbol
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(legendX, legendY + 45, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('= Lighting Point', legendX + 25, legendY + 50);
+            
+            // Switch symbol
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect(legendX, legendY + 65, 12, 12);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('= Light Switch', legendX + 25, legendY + 75);
+            
+            // Consumer unit symbol
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(legendX, legendY + 85, 15, 25);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '10px Arial';
+            ctx.fillText('CU', legendX + 4, legendY + 100);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('= Consumer Unit', legendX + 25, legendY + 100);
+        }
+
+        // Generate technical specifications
+        function generateSpecifications() {
+            const specs = projectData[currentProjectType].designSpecs;
+            
+            let html = `
+                <div class="design-details">
+                    <div class="design-item">
+                        <h4><i class="fas fa-plug"></i> Circuit Design</h4>
+                        <p><strong>Lighting Circuits:</strong> ${specs.circuits.lighting} circuits</p>
+                        <p><strong>Power Circuits:</strong> ${specs.circuits.power} circuits</p>
+                        <p><strong>Special Circuits:</strong> ${specs.circuits.special} circuits (A/C, Water heater, etc.)</p>
+                        <p><strong>Total Circuits:</strong> ${specs.circuits.lighting + specs.circuits.power + specs.circuits.special}</p>
+                    </div>
+                    <div class="design-item">
+                        <h4><i class="fas fa-bolt"></i> Load Calculation</h4>
+                        <p><strong>Total Connected Load:</strong> ${specs.load}</p>
+                        <p><strong>Maximum Demand:</strong> ${specs.demand}</p>
+                        <p><strong>Diversity Factor:</strong> 0.73</p>
+                        <p><strong>Main Switch:</strong> ${specs.mainSwitch}</p>
+                    </div>
+                    <div class="design-item">
+                        <h4><i class="fas fa-code-branch"></i> Wiring Specification</h4>
+                        <p><strong>Main Incoming:</strong> ${specs.wiring.main}</p>
+                        <p><strong>Power Circuits:</strong> ${specs.wiring.power}</p>
+                        <p><strong>Lighting Circuits:</strong> ${specs.wiring.lighting}</p>
+                        <p><strong>Earthing:</strong> 16mm² GI / Copper</p>
+                    </div>
+                </div>
+                
+                <div class="notes" style="margin-top: 1.5rem;">
+                    <h4><i class="fas fa-clipboard-check"></i> Compliance & Standards</h4>
+                    <ul>
+                        <li>All electrical work to comply with Kenyan Electrical Code 2025</li>
+                        <li>KEBS approved materials to be used throughout</li>
+                        <li>IEK registered electrical engineer to supervise installation</li>
+                        <li>Earth resistance not to exceed 5 ohms as per EPRA regulations</li>
+                        <li>All circuits to be protected by appropriate MCBs and RCDs</li>
+                        <li>Final installation to be certified by licensed electrical contractor</li>
+                    </ul>
+                </div>
+                
+                <div class="design-details" style="margin-top: 1.5rem;">
+                    <div class="design-item">
+                        <h4><i class="fas fa-tools"></i> Installation Methodology</h4>
+                        <p>• Concealed conduit wiring in walls and ceilings</p>
+                        <p>• Surface mounting in industrial/commercial areas</p>
+                        <p>• Proper labeling of all circuits at distribution board</p>
+                        <p>• Separation of power and lighting circuits</p>
+                        <p>• Dedicated circuits for kitchen, AC units, and water heaters</p>
+                    </div>
+                    <div class="design-item">
+                        <h4><i class="fas fa-check-circle"></i> Testing & Commissioning</h4>
+                        <p>• Insulation resistance test (>1MΩ)</p>
+                        <p>• Earth continuity test (<0.5Ω)</p>
+                        <p>• Polarity test of all outlets</p>
+                        <p>• RCD trip time test (<300ms)</p>
+                        <p>• Load testing of all circuits</p>
+                        <p>• Documentation and as-built drawings</p>
+                    </div>
+                </div>
+            `;
+            
+            specificationsContent.innerHTML = html;
+        }
+
+        // Update materials table in preview
+        function updateMaterialsTable(materials) {
+            const tableBody = document.querySelector('#materials-table tbody');
+            tableBody.innerHTML = '';
+            
+            let totalCost = 0;
+            
+            materials.forEach(material => {
+                const total = material.quantity * material.unitPrice;
+                totalCost += total;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${material.item}</td>
+                    <td>${material.description}</td>
+                    <td>${material.quantity}</td>
+                    <td>${formatCurrency(material.unitPrice)}</td>
+                    <td>${formatCurrency(total)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update total cost
+            document.getElementById('total-cost').textContent = formatCurrency(totalCost);
+        }
+
+        // Update preview with form values
+        function updatePreview() {
+            document.getElementById('preview-project-name').textContent = 
+                projectNameInput.value || projectData[currentProjectType].name;
+            
+            document.getElementById('preview-client').textContent = 
+                clientNameInput.value || 'Not specified';
+            
+            document.getElementById('preview-location').textContent = 
+                locationInput.value || 'Not specified';
+            
+            document.getElementById('preview-size').textContent = 
+                propertySizeInput.value || 'Not specified';
+        }
+
+        // Format currency for Kenyan Shillings
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-KE', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+
+        // Download quotation PDF
+        function downloadQuotationPDF() {
+            // Show loading
+            loadingQuotation.style.display = 'block';
+            quotationPreview.style.display = 'none';
+            
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                
+                // Title
+                doc.setFontSize(20);
+                doc.setTextColor(15, 23, 42);
+                doc.text('ELECTRICAL WORKS QUOTATION', 105, 20, { align: 'center' });
+                
+                // Year badge
+                doc.setFillColor(181, 154, 106);
+                doc.roundedRect(85, 25, 40, 8, 2, 2, 'F');
+                doc.setFontSize(10);
+                doc.setTextColor(15, 23, 42);
+                doc.text('2025 KENYA MARKET RATES', 105, 30, { align: 'center' });
+                
+                // Project details
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`For: ${projectNameInput.value || projectData[currentProjectType].name}`, 20, 45);
+                doc.text(`Date: ${document.getElementById('preview-date').textContent}`, 20, 52);
+                doc.text(`Client: ${clientNameInput.value || 'Not specified'}`, 20, 59);
+                doc.text(`Location: ${locationInput.value || 'Not specified'}`, 20, 66);
+                doc.text(`Property Size: ${propertySizeInput.value || 'Not specified'} Sq. Ft`, 20, 73);
+                doc.text(`Quotation ID: KE-EQ-2025-${Math.floor(1000 + Math.random() * 9000)}`, 140, 52);
+                
+                // Materials table
+                const tableColumn = ["Item", "Description", "Qty", "Unit Price", "Total"];
+                const tableRows = [];
+                
+                const materials = [...projectData[currentProjectType].materials];
+                
+                // Add additional options if selected
+                if (solarCheckbox.checked) {
+                    materials.push({
+                        item: (materials.length + 1).toString(),
+                        description: additionalOptions.solar.description,
+                        quantity: 1,
+                        unitPrice: additionalOptions.solar.price
+                    });
+                }
+                
+                if (surgeCheckbox.checked) {
+                    materials.push({
+                        item: (materials.length + 1).toString(),
+                        description: additionalOptions.surge.description,
+                        quantity: 1,
+                        unitPrice: additionalOptions.surge.price
+                    });
+                }
+                
+                if (smartCheckbox.checked) {
+                    materials.push({
+                        item: (materials.length + 1).toString(),
+                        description: additionalOptions.smart.description,
+                        quantity: 1,
+                        unitPrice: additionalOptions.smart.price
+                    });
+                }
+                
+                if (cctvCheckbox.checked) {
+                    materials.push({
+                        item: (materials.length + 1).toString(),
+                        description: additionalOptions.cctv.description,
+                        quantity: 1,
+                        unitPrice: additionalOptions.cctv.price
+                    });
+                }
+                
+                if (generatorCheckbox.checked) {
+                    materials.push({
+                        item: (materials.length + 1).toString(),
+                        description: additionalOptions.generator.description,
+                        quantity: 1,
+                        unitPrice: additionalOptions.generator.price
+                    });
+                }
+                
+                if (waterHeaterCheckbox.checked) {
+                    materials.push({
+                        item: (materials.length + 1).toString(),
+                        description: additionalOptions.waterHeater.description,
+                        quantity: 1,
+                        unitPrice: additionalOptions.waterHeater.price
+                    });
+                }
+                
+                let totalCost = 0;
+                
+                materials.forEach(material => {
+                    const total = material.quantity * material.unitPrice;
+                    totalCost += total;
+                    
+                    const materialData = [
+                        material.item,
+                        material.description,
+                        material.quantity.toString(),
+                        `KES ${formatCurrency(material.unitPrice)}`,
+                        `KES ${formatCurrency(total)}`
+                    ];
+                    tableRows.push(materialData);
+                });
+                
+                // Add total row
+                tableRows.push(["", "", "", "TOTAL:", `KES ${formatCurrency(totalCost)}`]);
+                
+                doc.autoTable({
+                    startY: 80,
+                    head: [tableColumn],
+                    body: tableRows,
+                    theme: 'grid',
+                    headStyles: { 
+                        fillColor: [15, 23, 42],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    styles: { fontSize: 9 },
+                    columnStyles: {
+                        0: { cellWidth: 15 },
+                        1: { cellWidth: 80 },
+                        2: { cellWidth: 15 },
+                        3: { cellWidth: 35 },
+                        4: { cellWidth: 35 }
+                    }
+                });
+                
+                // Notes
+                const finalY = doc.lastAutoTable.finalY + 10;
+                doc.setFontSize(11);
+                doc.setTextColor(13, 148, 136);
+                doc.text('Notes & Terms:', 20, finalY);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                const notes = [
+                    '• Prices are based on current Kenyan market rates (October 2025)',
+                    '• Quotation valid for 30 days from the date of issue',
+                    '• Prices may vary based on actual site conditions and location',
+                    '• Installation labor and professional fees included',
+                    '• All materials comply with KEBS and IEK standards',
+                    '• Payment terms: 40% advance, 50% upon delivery, 10% after completion'
+                ];
+                
+                notes.forEach((note, index) => {
+                    doc.text(note, 25, finalY + 7 + (index * 5));
+                });
+                
+                // Contact info
+                doc.setFontSize(10);
+                doc.setTextColor(100, 116, 139);
+                doc.text('Contact: +254712836067 | Email: brayomaisiba@gmail.com', 105, 280, { align: 'center' });
+                doc.text('© 2025 Kenya Electrical Works Pro. All rights reserved.', 105, 285, { align: 'center' });
+                
+                // Save the PDF
+                const projectName = projectNameInput.value.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                doc.save(`Electrical_Quotation_${projectName}_2025.pdf`);
+                
+                // Hide loading and show preview
+                loadingQuotation.style.display = 'none';
+                quotationPreview.style.display = 'block';
+                
+                // Show notification
+                showNotification('Quotation PDF downloaded successfully!');
+            }, 1000);
+        }
+
+        // Download design PDF
+        function downloadDesignPDF() {
+            // Show loading
+            loadingDesign.style.display = 'block';
+            designPreview.style.display = 'none';
+            
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'mm', 'a4');
+                
+                // Title
+                doc.setFontSize(20);
+                doc.setTextColor(15, 23, 42);
+                doc.text('ELECTRICAL DESIGN LAYOUT', 148, 20, { align: 'center' });
+                
+                // Project details
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Project: ${projectNameInput.value || projectData[currentProjectType].name}`, 20, 35);
+                doc.text(`Client: ${clientNameInput.value || 'Not specified'}`, 20, 42);
+                doc.text(`Location: ${locationInput.value || 'Not specified'}`, 20, 49);
+                doc.text(`Design Date: ${document.getElementById('preview-date').textContent}`, 20, 56);
+                doc.text(`Design ID: KE-ED-2025-${Math.floor(1000 + Math.random() * 9000)}`, 200, 35);
+                
+                // Add design image from canvas
+                const canvasData = canvas.toDataURL('image/jpeg', 1.0);
+                doc.addImage(canvasData, 'JPEG', 20, 65, 250, 120);
+                
+                // Specifications
+                const specs = projectData[currentProjectType].designSpecs;
+                const specY = 190;
+                
+                doc.setFontSize(14);
+                doc.setTextColor(13, 148, 136);
+                doc.text('ELECTRICAL SPECIFICATIONS', 148, specY, { align: 'center' });
+                
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                
+                // Left column
+                doc.text('CIRCUIT DESIGN:', 30, specY + 15);
+                doc.text(`• Lighting Circuits: ${specs.circuits.lighting}`, 35, specY + 25);
+                doc.text(`• Power Circuits: ${specs.circuits.power}`, 35, specY + 32);
+                doc.text(`• Special Circuits: ${specs.circuits.special}`, 35, specY + 39);
+                
+                doc.text('LOAD CALCULATION:', 30, specY + 50);
+                doc.text(`• Total Connected Load: ${specs.load}`, 35, specY + 60);
+                doc.text(`• Maximum Demand: ${specs.demand}`, 35, specY + 67);
+                doc.text(`• Main Switch: ${specs.mainSwitch}`, 35, specY + 74);
+                
+                // Right column
+                doc.text('WIRING SPECIFICATION:', 150, specY + 15);
+                doc.text(`• Main Incoming: ${specs.wiring.main}`, 155, specY + 25);
+                doc.text(`• Power Circuits: ${specs.wiring.power}`, 155, specY + 32);
+                doc.text(`• Lighting Circuits: ${specs.wiring.lighting}`, 155, specY + 39);
+                doc.text(`• Earthing: 16mm² GI / Copper`, 155, specY + 46);
+                
+                doc.text('COMPLIANCE:', 150, specY + 60);
+                doc.text('• KEBS Standards', 155, specY + 70);
+                doc.text('• Kenyan Electrical Code 2025', 155, specY + 77);
+                doc.text('• IEK & EPRA Regulations', 155, specY + 84);
+                
+                // Footer
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text('Designed by Kenya Electrical Works Pro | +254712836067', 148, 280, { align: 'center' });
+                doc.text('This is a design document. Actual installation must be done by licensed electrician.', 148, 285, { align: 'center' });
+                
+                // Save the PDF
+                const projectName = projectNameInput.value.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                doc.save(`Electrical_Design_${projectName}_2025.pdf`);
+                
+                // Hide loading and show preview
+                loadingDesign.style.display = 'none';
+                designPreview.style.display = 'block';
+                
+                // Show notification
+                showNotification('Electrical design PDF downloaded successfully!');
+            }, 1000);
+        }
+
+        // Download both as ZIP (simulated)
+        function downloadBothAsZIP() {
+            // For demo purposes, we'll just download both PDFs separately
+            // In a real implementation, you would use a library like JSZip
+            
+            showNotification('Downloading both quotation and design PDFs...');
+            
+            // Simulate download of both
+            setTimeout(() => {
+                downloadQuotationPDF();
+                
+                setTimeout(() => {
+                    downloadDesignPDF();
+                    
+                    setTimeout(() => {
+                        showNotification('Both PDFs downloaded! In a real system, they would be zipped together.');
+                    }, 1500);
+                }, 800);
+            }, 500);
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            notificationText.textContent = message;
+            
+            if (isError) {
+                notification.classList.add('error');
+            } else {
+                notification.classList.remove('error');
+            }
+            
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        // Reset form function
+        function resetForm() {
+            // Reset to default 3-bedroom option
+            projectOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.type === '3-bedroom') {
+                    opt.classList.add('selected');
+                    currentProjectType = '3-bedroom';
+                }
+            });
+            
+            // Reset form values
+            projectNameInput.value = projectData['3-bedroom'].name;
+            clientNameInput.value = 'John Kamau';
+            locationInput.value = 'Nairobi';
+            propertySizeInput.value = '1800';
+            specialRequirementsInput.value = 'Standard electrical installation for 3-bedroom house with living room, kitchen, and 2 bathrooms.';
+            
+            // Reset checkboxes
+            solarCheckbox.checked = true;
+            surgeCheckbox.checked = true;
+            smartCheckbox.checked = false;
+            cctvCheckbox.checked = false;
+            generatorCheckbox.checked = false;
+            waterHeaterCheckbox.checked = false;
+            
+            // Regenerate quotation and design
+            generateQuotationAndDesign();
+            
+            // Show notification
+            showNotification('Form reset to default values');
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
